@@ -1,0 +1,48 @@
+\hfill {\bf Page}
+\contentsline {chapter}{Acknowledgements}{v}%
+\contentsline {chapter}{Abstract}{vi}%
+\contentsline {chapter}{Table of Contents}{vii}%
+\contentsline {chapter}{List of Tables}{ix}%
+\contentsline {chapter}{List of Figures}{x}%
+\noindent {\bf Chapter}
+\contentsline {chapter}{\numberline {1}Introduction}{1}%
+\contentsline {section}{\numberline {1.1}Background}{1}%
+\contentsline {section}{\numberline {1.2}Problem Statement}{2}%
+\contentsline {section}{\numberline {1.3}Overview of Thesis}{2}%
+\contentsline {chapter}{\numberline {2}Literature Review}{4}%
+\contentsline {section}{\numberline {2.1}Decision Trees}{4}%
+\contentsline {section}{\numberline {2.2}Types of Decision Trees}{6}%
+\contentsline {section}{\numberline {2.3}Extension of Decision Trees and Recent development}{7}%
+\contentsline {section}{\numberline {2.4}Problem with Inference}{8}%
+\contentsline {chapter}{\numberline {3}Methodology}{10}%
+\contentsline {section}{\numberline {3.1}Motivation }{10}%
+\contentsline {subsection}{\numberline {3.1.1} Bias Correction Approach}{11}%
+\contentsline {subsection}{\numberline {3.1.2}Bootstrapping}{12}%
+\contentsline {section}{\numberline {3.2}Exiting Methods}{13}%
+\contentsline {subsection}{\numberline {3.2.1}Bootstrap Calibration on $\alpha $}{13}%
+\contentsline {section}{\numberline {3.3}Proposed Method}{16}%
+\contentsline {subsection}{\numberline {3.3.1}Bootstrap Bias Correction on $s_t$}{17}%
+\contentsline {chapter}{\numberline {4}Simulations Study}{20}%
+\contentsline {section}{\numberline {4.1} Bootstrap Calibration (BC)}{22}%
+\contentsline {section}{\numberline {4.2}Proposed Method }{24}%
+\contentsline {subsection}{\numberline {4.2.1} Bias Correction on SD}{24}%
+\contentsline {subsubsection}{ Model A}{24}%
+\contentsline {subsubsection}{Model B}{26}%
+\contentsline {subsubsection}{Model C}{28}%
+\contentsline {subsection}{\numberline {4.2.2}Empirical Coverage}{30}%
+\contentsline {subsubsection}{Model A}{31}%
+\contentsline {subsubsection}{Model B}{31}%
+\contentsline {subsubsection}{Model C}{31}%
+\contentsline {subsection}{\numberline {4.2.3}Percentage Coverage Estimates}{32}%
+\contentsline {chapter}{\numberline {5}Real Data Analysis}{33}%
+\contentsline {section}{\numberline {5.1}Real Data Exploration}{33}%
+\contentsline {subsection}{\numberline {5.1.1}Data Source and Preparation}{33}%
+\contentsline {subsection}{\numberline {5.1.2}Obtaining the best Tree from the data set}{36}%
+\contentsline {subsection}{\numberline {5.1.3}Estimates of $s_t $ and $s_t^{c} $ from the best tree}{37}%
+\contentsline {subsection}{\numberline {5.1.4}Empirical Coverage from the best tree}{37}%
+\contentsline {chapter}{\numberline {6}Discussion and Conclusion}{39}%
+\contentsline {section}{\numberline {6.1}Significance of the Result}{39}%
+\contentsline {section}{\numberline {6.2}Recommendation}{40}%
+\noindent {\bf Appendix}
+\contentsline {chapter}{Appendix}{41}%
+\contentsline {chapter}{Vita}{59}%

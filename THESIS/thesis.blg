@@ -1,0 +1,64 @@
+This is BibTeX, Version 0.99d (TeX Live 2020)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: thesis.aux
+A level-1 auxiliary file: acknowl.aux
+A level-1 auxiliary file: abstract.aux
+A level-1 auxiliary file: null.aux
+A level-1 auxiliary file: chapter1.aux
+A level-1 auxiliary file: chapter2.aux
+A level-1 auxiliary file: chapter3.aux
+A level-1 auxiliary file: chapter4.aux
+A level-1 auxiliary file: chapter5.aux
+A level-1 auxiliary file: chapter6.aux
+A level-1 auxiliary file: chapter7.aux
+A level-1 auxiliary file: appendix.aux
+The style file: apalike.bst
+A level-1 auxiliary file: vitae.aux
+Database file #1: myref.bib
+Repeated entry---line 158 of file myref.bib
+ : @article{friedman1991multivariate
+ :                                  ,
+I'm skipping whatever remains of this entry
+Warning--empty journal in njoku2019decision
+You've used 24 entries,
+            1935 wiz_defined-function locations,
+            628 strings with 7122 characters,
+and the built_in function-call counts, 9348 in all, are:
+= -- 937
+> -- 342
+< -- 23
++ -- 116
+- -- 112
+* -- 751
+:= -- 1615
+add.period$ -- 73
+call.type$ -- 24
+change.case$ -- 171
+chr.to.int$ -- 24
+cite$ -- 25
+duplicate$ -- 379
+empty$ -- 652
+format.name$ -- 148
+if$ -- 1845
+int.to.chr$ -- 1
+int.to.str$ -- 0
+missing$ -- 24
+newline$ -- 122
+num.names$ -- 72
+pop$ -- 147
+preamble$ -- 1
+purify$ -- 175
+quote$ -- 0
+skip$ -- 316
+stack$ -- 0
+substring$ -- 644
+swap$ -- 70
+text.length$ -- 7
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 140
+warning$ -- 1
+while$ -- 81
+width$ -- 0
+write$ -- 310
+(There was 1 error message)

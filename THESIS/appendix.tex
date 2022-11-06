@@ -1,0 +1,652 @@
+
+
+\addcontentsline{toc}{chapter}{Appendix}
+
+
+
+\chapter*{Appendix}
+\section*{R Codes}
+
+%\begingroup
+%\fontsize{10pt}{12pt}\selectfont
+%\begin{verbatim}  
+% how to set font size here to 10 px ?  
+%\end{verbatim}  
+%\endgroup
+
+\begingroup
+\fontsize{10pt}{10pt}\selectfont
+\begin{enumerate}[A]
+	\item \begin{verbatim}  
+	# #########################################
+	# #########################################
+	# FUNCTION
+	# #########################################
+	# #########################################
+	
+	
+	library(rpart)
+	
+	# ====================
+	# GENERATE SOME DATA
+	# ====================
+	
+	rdat.MARS <- function(n, p=5, model="A")
+	{
+	X <- NULL
+	for (j in 1:p) {
+	x <- runif(n)
+	assign(paste("x", j, sep=""), x)
+	X <- cbind(X, x)
+	}
+	if (model=="A") mu <- 0.1*exp(4*x1) + 4/(1+exp(-20*(x2-0.5))) + 3*x3 + 2*x4 + x5
+	else if (model=="B") mu <- 10*sin(pi*x1*x2) + 20*(x3-0.5)^2 + 10*x4 + x5
+	else if (model=="C") mu <- 2 + 2*sign(x1 <= 0.5)*sign(x2 <=0.5)
+	else stop("The arugment model= needs to be either A or B.")
+	y <- mu + rnorm(n)
+	dat <- data.frame(cbind(y, X))
+	names(dat) <- c("y", paste("x", 1:p, sep=""))
+	return(dat)
+	}
+	
+	
+	# ===================================================================
+	# FUNCTION cart() WRAPS UP STEPS FOR OBTAINING BEST TREE WITH rpart
+	# YET WITH FOCUS ON THE TERMINAL NODES ONLY
+	# ===================================================================
+	
+	cart <- function(formula, data, method="anova", control=NULL,
+	size.selection=c("0SE", "1SE"), plot.it=FALSE){
+	if (is.null(control)) control <- rpart.control(minsplit=20, minbucket=10, 
+	maxdepth=5, cp=0, maxcompete=0,  # NUMBER OF COMPETITIVE SPLITS
+	maxsurrogate=0, usesurrogate=2, surrogatestyle=0,  	# SURROGATE SPLITS FOR MISSING DATA
+	xval=10)  
+	tre0 <- rpart(formula=formula, data=data, method=method, control=control); 
+	if (size.selection=="0SE") {
+	opt <- which.min(tre0$cptable[,"xerror"])
+	best.cp <- tre0$cptable[opt, "CP"]; # print(cp.best) 
+	best.tree <- prune(tre0, cp = best.cp)
+	} else if (size.selection=="1SE") {
+	if (plot.it) plotcp(tre0, minline = TRUE) # 1SE
+	cv.error <- (tre0$cptable)[,4]
+	SE1 <- min(cv.error) + ((tre0$cptable)[,5])[which.min(cv.error)]      # 1SE; CAN BE EASILY MODIFIED AS aSE FOR SOME a
+	position <- min((1:length(cv.error))[cv.error <= SE1]); # print(position)
+	# n.size  <- (tre0$cptable)[,2] + 1  #TREE SIZE IS ONE PLUS NUMBER OF SPLITS. 
+	# best.size <- n.size[position]; # best.size
+	best.cp <-  sqrt(tre0$cptable[position,1]*tre0$cptable[(position-1),1]); # print(best.cp)
+	# best.cp <- tre0$cptable[position,1]; print(best.cp)
+	best.tree <- prune(tre0, cp=best.cp)
+	}
+	else stop("The values of size.selection= must be either 0SE or 1SE")
+	leaf.info <- best.tree$frame[best.tree$frame$var=="<leaf>", c(2, 4:5)]
+	leaf.info$sd <- sqrt(leaf.info$dev/(leaf.info$n -1))
+	# THE ROW NAMES DON'T MATCH WELL WITH TERMINAL NODES 
+	n.leaf <- aggregate(dat$y, by=list(best.tree$where), FUN=length); n.leaf
+	leaf.info <- cbind(node=n.leaf$Group.1, leaf.info)
+	# OUTPUT
+	btree.size <- NROW(leaf.info)
+	list(leaf=leaf.info, btree=best.tree, cp=best.cp, size=btree.size, tree0=tre0)
+	}
+	
+	
+	# =========================================
+	# SEND A TREE DOWN A DATASET AND RECOMPUTE
+	# =========================================
+	
+	# LEAF INFO FROM fit.cart IS EXPANDED TO INCLUDE TEST SAMPLE INFO
+	send.down <- function(fit.cart, data, yname="y"){
+	leaf <- fit.cart$leaf
+	tree <- fit.cart$btree
+	node <- rpart:::pred.rpart(tree, x=rpart:::rpart.matrix(data)); 
+	data$node <- node
+	dat.tmp <- data[order(node), c(yname, "node")]
+	leaf.test <- aggregate(dat.tmp$y, by=list(dat.tmp$node), FUN=length)
+	yval.test <- aggregate(dat.tmp$y, by=list(dat.tmp$node), FUN=mean)$x
+	sd.test <- aggregate(dat.tmp$y, by=list(dat.tmp$node), FUN=sd)$x
+	# SUMMARIZE RESULTS
+	leaf.test <- cbind(leaf.test, yval.test, sd.test)
+	names(leaf.test) <- c("node", "n.test", "ybar.test", "sd.test")
+	leaf.info <- merge(leaf, leaf.test, by="node", all.x = FALSE)
+	return(leaf.info)
+	}
+
+
+
+
+\end{verbatim}
+
+\item\begin{verbatim}
+
+# ##########################################################################
+# TRIAL I: CHECK IF BOOTSTRAP CALIBRATION REALLY WORKS 
+# ##########################################################################
+
+rm(list=ls(all=TRUE))
+source("R-FunctionsBC.R")
+
+# set.seed(123)
+nrun <- 3; B <- 500
+n <- n.test <- 500;  p <- 5; Model <- "A"
+# n.test <- 2000;
+alpha <- c(1:200/10000); 
+
+z0 <- qnorm(1-alpha/2); n.alpha <- length(alpha)
+Alpha.True <- Alpha.Boots <- matrix(0, nrow=n.alpha, ncol=nrun)
+for (i in 1:nrun){
+print(paste("============== run ", i, " =================", sep=""))
+dat <- rdat.MARS(n=n, p=p, model=Model)
+fit.tree <- cart(y~., data=dat, method="anova", size.selection="1SE");
+best.tree <- fit.tree$btree 
+leaf <- fit.tree$leaf	
+P.True <- P.Boots <- matrix(0, nrow=n.alpha, ncol=B)
+
+# POPULATION VERSION
+for (b in 1:B){		
+test <- rdat.MARS(n=n.test, p=p, model=Model)
+test.info <- senddown(tree=best.tree, data=test, yname="y")
+for (k in 1:n.alpha){
+LB <- leaf$yval - z0[k]*leaf$sd/sqrt(leaf$n)
+UB <- leaf$yval + z0[k]*leaf$sd/sqrt(leaf$n)
+lb <- ub <- factor(test.info$node, levels=leaf$node, ordered=TRUE)
+levels(lb) <- LB; levels(ub) <- UB
+lb <- as.numeric(as.character(lb)); ub <- as.numeric(as.character(ub))
+P.True[k, b] <- mean((test.info$y >= lb) & (test.info$y <= ub)) 
+}
+}
+# print(P.True)
+Alpha.True[, i] <- apply(P.True, 1, mean)
+
+# BOOTSTRAP CALIBRATION
+for (b in 1:B){
+id.b <- sample(1:n, size=n, replace=TRUE) 
+dat.b <- dat[id.b,]
+fit.b <- cart(y~., data=dat.b, method="anova", size.selection="1SE");
+btree.b <- fit.b$btree 
+leaf.b <- fit.b$leaf	
+info.b <- senddown(tree=btree.b, data=dat, yname="y")
+for (k in 1:n.alpha){
+LB <- leaf.b$yval - z0[k]*leaf.b$sd/sqrt(leaf.b$n)
+UB <- leaf.b$yval + z0[k]*leaf.b$sd/sqrt(leaf.b$n)
+lb <- ub <- factor(info.b$node, levels=leaf.b$node, ordered=TRUE)
+levels(lb) <- LB; levels(ub) <- UB
+lb <- as.numeric(as.character(lb)); ub <- as.numeric(as.character(ub))
+P.Boots[k, b] <- mean((info.b$y >= lb) & (info.b$y <= ub)) 
+}
+}
+# print(P.Boots)
+Alpha.Boots[, i] <- apply(P.Boots, 1, mean)
+}
+apply(Alpha.True, 1, mean)
+apply(Alpha.Boots, 1, mean)
+save(Alpha.True, Alpha.Boots, file="Out-Trial-IA.Rdata")
+
+
+
+
+
+
+# =========================
+# PLOTTING THE RESULTS
+# =========================
+
+rm(list=ls(all=TRUE))
+alpha <- c(1:50/10000); 
+postscript(file="fig-Trial-I.eps", horizontal=TRUE)
+par(mfrow=c(1, 3), mar=c(8, 4, 8, 4))
+
+# MODEL A
+load("Out-trial-IA.Rdata")
+M0 <- Alpha.Boots; dim(M0)
+avg1.a <- apply(Alpha.Boots, 1, mean)
+plot(x=range(alpha), y=c(.78, 1), type="n", xlab=expression(alpha),
+ylab="Coverage Probability", main="Model A")
+for (j in 1:NCOL(M0)){
+a0 <- M0[,j]
+lines(alpha, a0, lwd=0.005, col="orange") 
+}
+M1 <- Alpha.True
+avg2.a <- apply(M1, 1, mean)
+for (j in 1:NCOL(M1)){
+a0 <- M1[,j]
+lines(alpha, a0, lwd=0.005, col="lightblue") 
+}
+lines(alpha, avg1.a, lwd=1.5, col="brown")
+lines(alpha, avg2.a, lwd=1.5, col="blue")
+abline(h=0.95, col="gray50", lwd=0.8, lty=2)
+legend(0.001, 1.00, legend=c("Bootstrap", "Population"), lty=1, 
+col=c("orange", "blue"), lwd=1)
+
+
+# MODEL B
+load("Out-trial-IB.Rdata")
+M0 <- Alpha.Boots; dim(M0)
+avg1.a <- apply(Alpha.Boots, 1, mean)
+plot(x=range(alpha), y=c(.76, 1), type="n", xlab=expression(alpha),
+ylab="Coverage Probability", main="Model B")
+for (j in 1:NCOL(M0)){
+a0 <- M0[,j]
+lines(alpha, a0, lwd=0.005, col="orange") 
+}
+M0 <- Alpha.True
+avg2.a <- apply(M0, 1, mean)
+for (j in 1:NCOL(M0)){
+a0 <- M0[,j]
+lines(alpha, a0, lwd=0.005, col="lightblue") 
+}
+lines(alpha, avg1.a, lwd=1.5, col="brown")
+lines(alpha, avg2.a, lwd=1.5, col="blue")
+abline(h=0.95, col="gray50", lwd=0.8, lty=2)
+
+
+# MODEL C
+load("Out-trial-IC.Rdata")
+M0 <- Alpha.Boots; dim(M0)
+dat.tmp <- data.frame(cbind(alpha, M0))
+
+library(tidyverse)
+dat.tmp 
+
+avg1.a <- apply(Alpha.Boots, 1, mean)
+plot(x=range(alpha), y=c(.74, 1), type="n", xlab=expression(alpha),
+ylab="Coverage Probability", main="Model C")
+for (j in 1:NCOL(M0)){
+a0 <- M0[,j]
+lines(alpha, a0, lwd=0.005, col="orange") 
+}
+M0 <- Alpha.True
+avg2.a <- apply(M0, 1, mean)
+for (j in 1:NCOL(M0)){
+a0 <- M0[,j]
+lines(alpha, a0, lwd=0.005, col="lightblue") 
+}
+lines(alpha, avg1.a, lwd=1.5, col="brown")
+lines(alpha, avg2.a, lwd=1.5, col="blue")
+abline(h=0.95, col="gray50", lwd=0.8, lty=2)
+
+dev.off()
+
+
+\end{verbatim}
+
+
+\item \begin{verbatim}
+###########################################
+# BIAS-CORRECTION OF SD IN DECISION TREES  
+###########################################
+
+# -----------
+# MODEL A
+# -----------
+
+rm(list=ls(all=TRUE))
+source("Functions-BBC.R")
+
+set.seed(111)
+nrun <- 100
+B <- 200; n <- 500; Model <- "A"; 
+# positive.bias <- FALSE
+positive.bias <- TRUE
+p <- 5; n0 <- 10000;
+OUT <- NULL
+TREE <- as.list(1:nrun)
+for (i in 1:nrun) {
+dat <- rdat.MARS(n=n, p=p, model=Model)
+fit.cart <- cart(y~., data=dat, method="anova", size.selection="1SE", plot.it=FALSE);
+TREE[[i]] <- fit.cart$btree
+node.0 <- rpart:::pred.rpart(fit.cart$btree, x=rpart:::rpart.matrix(dat));
+test <- rdat.MARS(n=n0, p=p, model=Model)
+info.0 <- send.down(fit.cart, data=test, yname="y"); 
+sd.un <- info.0$sd
+
+# BOOTSTRAP CORRECTION
+bias <- rep(0, length(sd.un))
+for (b in 1:B){
+print(cbind(run=i, boots=b))
+id.b <- sample(1:n, size=n, replace=TRUE) 
+dat.b <- dat[id.b,]; dat.oob <- dat[-unique(id.b),]
+fit.b <- cart(y~., data=dat.b, method="anova", size.selection="1SE", plot.it=FALSE);
+info.b <- send.down(fit.b, data=dat, yname="y")  ## SHOULD USE dat.oob?
+bias.b <-  	info.b$sd.test - info.b$sd
+if (positive.bias) bias.b <- pmax(bias.b, 0)   ### NECESSARY?
+node.b <- rpart:::pred.rpart(fit.b$btree, x=rpart:::rpart.matrix(dat)); 
+tab <- table(node.0, node.b) 
+M.prop <- prop.table(tab, 1)
+bias.b <- M.prop%*%bias.b
+bias <- bias + bias.b
+}
+bias <- bias/B
+sd.co <- sd.un + bias
+out <- cbind(tree=i, info.0,bias, sd.co)
+OUT <- rbind(OUT, out)
+}
+OUT <- as.data.frame(OUT)
+colnames(OUT) <- c("tree", "node", "n", "dev", "ybar", "sd.uncorrected", 
+"n.test", "ybar.test", "sd.test",
+"bias", "sd.corrected")
+head(OUT)
+save(OUT, TREE, file="result-ModelA.Rdat") 
+
+
+
+# -----------
+# MODEL B
+# -----------
+
+rm(list=ls(all=TRUE))
+source("Functions-BBC.R")
+
+set.seed(111)
+nrun <- 100
+B <- 200; n <- 500; Model <- "B"; 
+# positive.bias <- FALSE
+positive.bias <- TRUE
+p <- 5; n0 <- 10000;
+OUT <- NULL
+TREE <- as.list(1:nrun)
+for (i in 1:nrun) {
+dat <- rdat.MARS(n=n, p=p, model=Model)
+fit.cart <- cart(y~., data=dat, method="anova", size.selection="1SE", plot.it=FALSE);
+TREE[[i]] <- fit.cart$btree
+node.0 <- rpart:::pred.rpart(fit.cart$btree, x=rpart:::rpart.matrix(dat));
+test <- rdat.MARS(n=n0, p=p, model=Model)
+info.0 <- send.down(fit.cart, data=test, yname="y"); 
+sd.un <- info.0$sd
+
+# BOOTSTRAP CORRECTION
+bias <- rep(0, length(sd.un))
+for (b in 1:B){
+print(cbind(run=i, boots=b))
+id.b <- sample(1:n, size=n, replace=TRUE) 
+dat.b <- dat[id.b,]; dat.oob <- dat[-unique(id.b),]
+fit.b <- cart(y~., data=dat.b, method="anova", size.selection="1SE", plot.it=FALSE);
+info.b <- send.down(fit.b, data=dat, yname="y")  ## SHOULD USE dat.oob?
+bias.b <-  	info.b$sd.test - info.b$sd
+if (positive.bias) bias.b <- pmax(bias.b, 0)   ### NECESSARY?
+node.b <- rpart:::pred.rpart(fit.b$btree, x=rpart:::rpart.matrix(dat)); 
+tab <- table(node.0, node.b) 
+M.prop <- prop.table(tab, 1)
+bias.b <- M.prop%*%bias.b
+bias <- bias + bias.b
+}
+bias <- bias/B
+sd.co <- sd.un + bias
+out <- cbind(tree=i, info.0,bias, sd.co)
+OUT <- rbind(OUT, out)
+}
+OUT <- as.data.frame(OUT)
+colnames(OUT) <- c("tree", "node", "n", "dev", "ybar", "sd.uncorrected", 
+"n.test", "ybar.test", "sd.test",
+"bias", "sd.corrected")
+head(OUT)
+save(OUT, TREE, file="result-ModelB.Rdat") 
+
+
+# ----------------------
+# MODEL C (TRUE TREE)
+# ----------------------
+
+rm(list=ls(all=TRUE))
+source("Functions-BBC.R")
+
+set.seed(111)
+nrun <- 100
+B <- 200; n <- 500; Model <- "C"; 
+# positive.bias <- FALSE
+positive.bias <- TRUE
+p <- 5; n0 <- 10000;
+OUT <- NULL
+TREE <- as.list(1:nrun)
+for (i in 1:nrun) {
+dat <- rdat.MARS(n=n, p=p, model=Model)
+fit.cart <- cart(y~., data=dat, method="anova", size.selection="1SE", plot.it=FALSE);
+TREE[[i]] <- fit.cart$btree
+node.0 <- rpart:::pred.rpart(fit.cart$btree, x=rpart:::rpart.matrix(dat));
+test <- rdat.MARS(n=n0, p=p, model=Model)
+info.0 <- send.down(fit.cart, data=test, yname="y"); 
+sd.un <- info.0$sd
+
+# BOOTSTRAP CORRECTION
+bias <- rep(0, length(sd.un))
+for (b in 1:B){
+print(cbind(run=i, boots=b))
+id.b <- sample(1:n, size=n, replace=TRUE) 
+dat.b <- dat[id.b,]; dat.oob <- dat[-unique(id.b),]
+fit.b <- cart(y~., data=dat.b, method="anova", size.selection="1SE", plot.it=FALSE);
+info.b <- send.down(fit.b, data=dat, yname="y")  ## SHOULD USE dat.oob?
+bias.b <-  	info.b$sd.test - info.b$sd
+if (positive.bias) bias.b <- pmax(bias.b, 0)   ### NECESSARY?
+node.b <- rpart:::pred.rpart(fit.b$btree, x=rpart:::rpart.matrix(dat)); 
+tab <- table(node.0, node.b) 
+M.prop <- prop.table(tab, 1)
+bias.b <- M.prop%*%bias.b
+bias <- bias + bias.b
+}
+bias <- bias/B
+sd.co <- sd.un + bias
+out <- cbind(tree=i, info.0,bias, sd.co)
+OUT <- rbind(OUT, out)
+}
+OUT <- as.data.frame(OUT)
+colnames(OUT) <- c("tree", "node", "n", "dev", "ybar", "sd.uncorrected", 
+"n.test", "ybar.test", "sd.test",
+"bias", "sd.corrected")
+head(OUT)
+save(OUT, TREE, file="result-ModelC.Rdat") 
+
+
+   
+#############################
+# EXPLORING THE REULSTS
+#############################
+
+rm(list=ls(all=TRUE))
+library(tidyverse)
+
+load("result-ModelA.Rdat")
+#load("result-ModelA-0SE.Rdat")
+#load("result-ModelB.Rdat")
+#load("result-ModelC.Rdat")
+
+ls()
+names(OUT); head(OUT)
+tail(OUT)
+
+OUT %>%
+select(tree, node, sd.uncorrected, sd.test, sd.corrected) %>%
+ggplot() +
+geom_point(aes(x=sd.test, y=sd.uncorrected, colour="sd.uncorrected"), alpha=0.1) +
+#xlab("SD based on Test Samples") + ylab("SD") +
+geom_point(aes(x=sd.test, sd.corrected, colour="sd.corrected"), alpha=0.1) +
+geom_density_2d(aes(x=sd.test, y=sd.uncorrected, colour="sd.uncorrected") ) +
+geom_density_2d(aes(x=sd.test, y=sd.corrected, color="sd.corrected") ) +
+geom_abline(slope=1, intercept = 0, colour="green4", size=1)+
+labs(
+x = "SD based on Test Samples",
+y = "SD",
+#title = "Plot of the Uncorrected and Bias-Corrected SD",
+color ="Legend")+ theme(
+legend.position = c(0.95, 0.95),
+legend.justification = c("right", "top"),
+legend.box.just = "right",
+legend.margin = margin(6, 6, 6, 6)
+) 
+       
+
+\end{verbatim}
+
+
+
+\item \begin{verbatim}
+# ==================
+# COVERAGE 
+# ==================
+
+rm(list=ls(all=TRUE))
+#source("Functions-BBC.R")
+
+#load("result-ModelA.Rdat")
+#load("result-ModelB.Rdat")
+load("result-ModelC.Rdat")
+TREE <- BTREE
+
+
+conf.level <- 0.95
+alpha <- (1-conf.level)  
+OUT %>% 
+#na.exclude() %>%
+mutate(L.naive = ybar - qnorm(1-alpha/2) * sd.uncorrected/sqrt(n), 
+U.naive = ybar + qnorm(1-alpha/2) * sd.uncorrected/sqrt(n), 
+L.BBC = ybar - qnorm(1-alpha/2) * sd.corrected/sqrt(n), 
+U.BBC = ybar + qnorm(1-alpha/2) * sd.corrected/sqrt(n), 
+L.oracle = ybar - qnorm(1-alpha/2) * sd.test/sqrt(n), 
+U.oracle = ybar + qnorm(1-alpha/2) * sd.test/sqrt(n)) %>% 
+select(tree, node, n, L.naive, U.naive, L.BBC, U.BBC, L.oracle, U.oracle) -> CI 
+
+CI %>% tail()
+
+
+
+n.trees <- 10
+n.sample <- 1000
+n0 <- 10000; p <- 5
+Model <- "C"
+yname <- "y"
+COVER <- NULL
+for (i in 1:n.trees){
+tree.i <- TREE[[i]]
+CI.i <- CI %>% filter(tree==i)
+cover.naive <- cover.BBC <- cover.oracle <- rep(0, NROW(CI.i))
+for (j in 1:n.sample) {
+print(cbind(tree=i, sample=j))
+dat <- rdat.MARS(n=n0, p=p, model=Model)
+node <- rpart:::pred.rpart(tree.i, x=rpart:::rpart.matrix(dat)); 
+dat$node <- node
+dat.tmp <- dat[order(node), c(yname, "node")]
+ybar.test <- aggregate(dat.tmp$y, by=list(dat.tmp$node), FUN=mean)$x
+cover.naive <- cover.naive + sign(ybar.test >= CI.i$L.naive & ybar.test <= CI.i$U.naive)
+cover.BBC <- cover.BBC + sign((ybar.test >= CI.i$L.BBC) & (ybar.test <= CI.i$U.BBC))
+cover.oracle <- cover.oracle + sign(ybar.test >= CI.i$L.oracle & ybar.test <= CI.i$U.oracle)
+}
+CI.i %>% mutate(cover.naive=cover.naive/n.sample, 
+cover.BBC=cover.BBC/n.sample,
+cover.oracle=cover.oracle/n.sample) -> CI.i
+COVER <- rbind(COVER, CI.i)
+}
+apply(COVER, 2, mean)
+
+\end{verbatim}
+
+\item \begin{verbatim}
+
+###### Real Data Exploration #################################
+
+rm(list=ls(all=TRUE))
+#setwd("~/Desktop/THESIS U/Updated/real data")
+source("Functions-BBC.R")
+baseball <- read.table("bb87.dat", header = F, 
+col.names=c("id", "name", "bat86", "hit86", "hr86", "run86", "rb86", "wlk86",
+"yrs", "batcr","hitcr", "hrcr", "runcr","rbcr", "wlkcr", "leag86", "div86",
+"team86", "pos86", "puto86", "asst86", "err86","salary", "leag87", "team87", 
+"logsalary"))
+
+apply(baseball, 2, FUN=function(x) length(unique(x)))
+
+dat <- baseball %>% 
+mutate(y=logsalary, team.change=sign(team86!=team87), 
+leag86=sign(leag86=="A"), 
+leag87=sign(leag87=="A"), 
+div86=sign(div86=="W")) %>% 
+select(-salary, -id, -name, -logsalary, -team86, -team87, -pos86) %>% 
+select(y, everything()) %>% 
+as.data.frame()
+head(dat)
+anyNA(dat)
+
+
+##############################################################################
+fit.cart <- cart(y ~., data=dat, method="anova", 
+size.selection="1SE", plot.it=TRUE,model= TRUE);
+btree <- fit.cart$btree
+node.0 <- rpart:::pred.rpart(btree, x=rpart:::rpart.matrix(dat));
+info.0 <- fit.cart$leaf
+sd.un <- info.0$sd
+
+#### Exploring the btree via a plot ############################
+library(rpart.plot)
+library(RColorBrewer)
+rpart.plot(btree,  shadow.col="gray", extra=1,
+main="Final (1SE) Tree Model for 1987 Baseball Data")
+
+
+# BOOTSTRAP CORRECTION
+B <- 500
+n <- nrow(dat)
+positive.bias <- TRUE
+bias <- rep(0, length(sd.un))
+for (b in 1:B){
+print(paste("=========== ", b, " ============", sep=""))
+id.b <- sample(1:n, size=n, replace=TRUE) 
+dat.b <- dat[id.b,]
+fit.b <- cart(y ~., data=dat.b, method="anova", 
+size.selection="1SE", plot.it=FALSE);
+info.b <- send.down(fit.b, data=dat, yname="y")  
+bias.b <-  	info.b$sd.test - info.b$sd
+if (positive.bias) bias.b <- pmax(bias.b, 0)   
+node.b <- rpart:::pred.rpart(fit.b$btree, x=rpart:::rpart.matrix(dat)); 
+tab <- table(node.0, node.b) 
+M.prop <- prop.table(tab, 1)
+bias.b <- M.prop%*%bias.b
+bias <- bias + bias.b
+}
+bias <- bias/B
+sd.co <- sd.un + bias
+out <- cbind(info.0,bias, sd.co)
+OUT <- as.data.frame(out)
+colnames(OUT) <- c("node", "n", "dev", "ybar", "sd.uncorrected","bias", "sd.corrected")
+save(OUT, file="result-bb.Rdat") 
+
+
+# ======================
+#   COVERAGE          #
+# ======================
+
+# load("result-bb.Rdat")
+conf.level <- 0.95
+alpha <- (1-conf.level)  
+OUT %>% 
+mutate(L.naive = ybar - qnorm(1-alpha/2) * sd.uncorrected/sqrt(n), 
+U.naive = ybar + qnorm(1-alpha/2) * sd.uncorrected/sqrt(n), 
+L.BBC = ybar - qnorm(1-alpha/2) * sd.corrected/sqrt(n), 
+U.BBC = ybar + qnorm(1-alpha/2) * sd.corrected/sqrt(n), 
+ybar.sal = exp(ybar),
+L.sal = exp(L.BBC), 
+U.sal=exp(U.BBC))%>%
+select(node, n, ybar, L.BBC, U.BBC, ybar.sal, L.sal, U.sal) -> CI 
+CI
+save(CI, file="CI-bb.Rdat")
+
+
+CI %>% 
+mutate(node=factor(node))
+ggplot(CI, aes(x=node, y=ybar.sal,group = node)) +
+geom_errorbar(aes(ymin=L.sal, ymax=U.sal), color="blue") + 
+geom_point(size=5, color="tomato")
+
+
+pd <- position_dodge(0.70)
+ggplot(CI, aes(x=node, y = ybar.sal, group = node)) +
+geom_point(position=pd) +
+geom_errorbar(data=CI, aes(ymin=L.sal, ymax=U.sal, 
+color=node), width=1, position=pd)
+
+\end{verbatim}
+
+
+
+
+\end{enumerate}
+
+
+
+
+

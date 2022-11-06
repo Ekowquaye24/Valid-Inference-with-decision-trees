@@ -1,0 +1,37 @@
+\BOOKMARK [0][-]{Doc-Start}{Acknowledgements}{}% 1
+\BOOKMARK [0][-]{chapter*.1}{Abstract}{}% 2
+\BOOKMARK [0][-]{chapter*.3}{Table of Contents}{}% 3
+\BOOKMARK [0][-]{chapter.1}{Introduction}{}% 4
+\BOOKMARK [1][-]{section.1.1}{Background}{chapter.1}% 5
+\BOOKMARK [1][-]{section.1.2}{Problem Statement}{chapter.1}% 6
+\BOOKMARK [1][-]{section.1.3}{Overview of Thesis}{chapter.1}% 7
+\BOOKMARK [0][-]{chapter.2}{Literature Review}{}% 8
+\BOOKMARK [1][-]{section.2.1}{Decision Trees}{chapter.2}% 9
+\BOOKMARK [1][-]{section.2.2}{Types of Decision Trees}{chapter.2}% 10
+\BOOKMARK [1][-]{section.2.3}{Extension of Decision Trees and Recent development}{chapter.2}% 11
+\BOOKMARK [1][-]{section.2.4}{Problem with Inference}{chapter.2}% 12
+\BOOKMARK [0][-]{chapter.3}{Methodology}{}% 13
+\BOOKMARK [1][-]{section.3.1}{Motivation }{chapter.3}% 14
+\BOOKMARK [2][-]{subsection.3.1.1}{ Bias Correction Approach}{section.3.1}% 15
+\BOOKMARK [2][-]{subsection.3.1.2}{Bootstrapping}{section.3.1}% 16
+\BOOKMARK [1][-]{section.3.2}{Exiting Methods}{chapter.3}% 17
+\BOOKMARK [2][-]{subsection.3.2.1}{Bootstrap Calibration on }{section.3.2}% 18
+\BOOKMARK [1][-]{section.3.3}{Proposed Method}{chapter.3}% 19
+\BOOKMARK [2][-]{subsection.3.3.1}{Bootstrap Bias Correction on st}{section.3.3}% 20
+\BOOKMARK [0][-]{chapter.4}{Simulations Study}{}% 21
+\BOOKMARK [1][-]{section.4.1}{ Bootstrap Calibration \(BC\)}{chapter.4}% 22
+\BOOKMARK [1][-]{section.4.2}{Proposed Method }{chapter.4}% 23
+\BOOKMARK [2][-]{subsection.4.2.1}{ Bias Correction on SD}{section.4.2}% 24
+\BOOKMARK [2][-]{subsection.4.2.2}{Empirical Coverage}{section.4.2}% 25
+\BOOKMARK [2][-]{subsection.4.2.3}{Percentage Coverage Estimates}{section.4.2}% 26
+\BOOKMARK [0][-]{chapter.5}{Real Data Analysis}{}% 27
+\BOOKMARK [1][-]{section.5.1}{Real Data Exploration}{chapter.5}% 28
+\BOOKMARK [2][-]{subsection.5.1.1}{Data Source and Preparation}{section.5.1}% 29
+\BOOKMARK [2][-]{subsection.5.1.2}{Obtaining the best Tree from the data set}{section.5.1}% 30
+\BOOKMARK [2][-]{subsection.5.1.3}{Estimates of st \040and stc \040from the best tree}{section.5.1}% 31
+\BOOKMARK [2][-]{subsection.5.1.4}{Empirical Coverage from the best tree}{section.5.1}% 32
+\BOOKMARK [0][-]{chapter.6}{Discussion and Conclusion}{}% 33
+\BOOKMARK [1][-]{section.6.1}{Significance of the Result}{chapter.6}% 34
+\BOOKMARK [1][-]{section.6.2}{Recommendation}{chapter.6}% 35
+\BOOKMARK [0][-]{section.6.2}{Appendix}{}% 36
+\BOOKMARK [0][-]{appendix*.12}{Curriculum Vitae}{}% 37

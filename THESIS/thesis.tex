@@ -1,0 +1,285 @@
+% thesis.tex
+
+\documentclass[12pt]{report}
+
+\usepackage{utepcsthesis}
+%\usepackage{graphics}
+
+\usepackage{graphicx}
+\usepackage{enumerate}
+\usepackage{float}
+\usepackage{physics}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage[utf8]{inputenc}
+\usepackage[]{natbib}
+%\usepackage[font=large,skip=-10pt]{caption}
+\usepackage[titletoc]{appendix}
+
+\RequirePackage[OT1]{fontenc} 
+\RequirePackage{amsthm,amsmath}
+\usepackage{graphics,epsfig,epsf,psfrag}
+\usepackage{url}
+% \usepackage[dvips,pdfmark]{hyperref}
+%\usepackage[colorlinks, allcolors=black]{hyperref}
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
+\usepackage{bbm, bm}
+\usepackage{graphicx,lscape,rotate}
+\usepackage{dashrule} % To make dotted/dashed lines
+\usepackage{epstopdf}
+%\usepackage{algorithmic, algorithm}
+\usepackage{enumerate, framed}
+\usepackage{colortbl}
+\usepackage{color, appendix}
+% ALGORITHM: TWO OPTIONS
+\usepackage{algorithmic} %, algorithm}
+\usepackage[linesnumbered,lined,boxed,commentsnumbered]{algorithm2e}
+%\usepackage{hyperref}
+%\usepackage[round]{natbib}
+%\RequirePackage[numbers]{natbib}
+%\RequirePackage[colorlinks,citecolor=blue,urlcolor=blue]{hyperref}
+% ==========================================================
+%\usepackage{pstricks,pst-node,pst-tree}  % PLotting Trees
+% ==========================================================
+% \usepackage[dvips,a4paper,colorlinks,breaklinks,unicode]{hyperref}%backref,
+% \usepackage[dvips]{color}
+
+% Approximately 1 inch borders all around
+%\setlength\topmargin{-.56in}
+%\setlength\evensidemargin{-.1in}
+%\setlength\oddsidemargin{-.1in}
+%\setlength\textwidth{6.6in}
+%\setlength\textheight{8.6in}
+
+%\pagestyle{empty}  % <-- if you do not want page numbers
+%\usepackage{graphics, hyperref}  % <-- special graphics package
+
+% set up spacing commands for single and double spacing
+\let\BLS=\baselinestretch
+\makeatletter
+\newcommand{\singlespacing}{\let\CS=\@currsize\renewcommand{\baselinestretch}{1}\small\CS}
+\newcommand{\doublespacing}{\let\CS=\@currsize\renewcommand{
+		\baselinestretch}{1.5}\small\CS}
+\newcommand{\normalspacing}{\let\CS=\@currsize\renewcommand{\baselinestretch}{\BLS}\small\CS}
+\makeatother
+
+%\newtheorem{theorem}{Theorem}%[section]
+\newtheorem{proposition}{Proposition}%[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{remark}{Remark}%[section]
+\newtheorem*{remark*}{Remark} %For having unnumbered remarks.
+\theoremstyle{definition}
+%\newtheorem{definition}{Definition}%[section]
+
+\DeclareMathOperator*{\argmin}{\arg\!\min}
+\DeclareMathOperator*{\argmax}{\arg\!\max}
+
+\begin{document}
+	% macros
+	\def\R{\mbox{\rlap{I}\hskip .03in R}}
+	\newcommand{\bfbeta}{\mbox{\boldmath $\beta$}}
+	\newcommand{\bbeta}{\pmb{\beta}}
+	\newcommand{\bftheta}{\mbox{\boldmath $\theta$}}
+	\newcommand{\btheta}{\mbox{\boldmath $\theta$}}
+	\newcommand{\bfdelta}{\mbox{\boldmath $\delta$}}
+	\newcommand{\bfSigma}{\mbox{\boldmath $\Sigma$}}
+	\newcommand{\bfhatbeta}{\mbox{\boldmath $\hat\beta$}}
+	\newcommand{\bfgamma}{\mbox{\boldmath $\gamma$}}
+	\newcommand{\bgamma}{\pmb{\gamma}}
+	\newcommand{\bfomega}{\mbox{\boldmath $\omega$}}
+	\newcommand{\bfepsilon}{\mbox{\boldmath $\varepsilon$}}
+	\newcommand{\bdLambda}{\mbox{\boldmath $\Lambda$}}
+	\newcommand{\bflambda}{\mbox{\boldmath $\lambda$}}
+	\newcommand{\X}{\mathbf{X}}
+	\newcommand{\x}{\mathbf{x}}
+	\newcommand{\z}{\mathbf{z}}
+	\newcommand{\y}{\mathbf{y}}
+	\newcommand{\T}{\mathcal{T}}  % DENOTE A TREE MODEL
+	\newcommand{\bfj}{\mathbf{j}}
+	\newcommand{\diag}{\mbox{diag}}
+	\newcommand{\sgn}{\mbox{sgn}}
+	\newcommand{\expit}{\mbox{expit}}
+	%\newcommand{\tr}{\mbox{tr}} % trace
+	\newcommand{\paral}{\mathord{\parallel}}
+	%\DeclareMathOperator*{\argmin}{\arg\!\min}
+	%\DeclareMathOperator*{\argmax}{\arg\!\max}
+	\newcommand\ind{\protect\mathpalette{\protect\indT}{\perp}}
+	\def\indT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
+	
+	
+	% COLUMN VECTOR \colvec{5}{a}{b}{c}{d}{e}
+	\newcount\colveccount
+	\newcommand*\colvec[1]{
+		\global\colveccount#1
+		\begin{pmatrix}
+			\colvecnext
+		}
+		\def\colvecnext#1{
+			#1
+			\global\advance\colveccount-1
+			\ifnum\colveccount>0
+			\\
+			\expandafter\colvecnext
+			\else
+		\end{pmatrix}
+		\fi
+	}
+	
+	% COLUMN VECTOR \Spvek[c]{1;-2;-3}
+	\makeatletter
+	\newcommand{\Spvek}[2][r]{%
+		\gdef\@VORNE{1}
+		\left(\hskip-\arraycolsep%
+		\begin{array}{#1}\vekSp@lten{#2}\end{array}%
+		\hskip-\arraycolsep\right)}
+	
+	\def\vekSp@lten#1{\xvekSp@lten#1;vekL@stLine;}
+	\def\vekL@stLine{vekL@stLine}
+	\def\xvekSp@lten#1;{\def\temp{#1}%
+		\ifx\temp\vekL@stLine
+		\else
+		\ifnum\@VORNE=1\gdef\@VORNE{0}
+		\else\@arraycr\fi%
+		#1%
+		\expandafter\xvekSp@lten
+		\fi}
+	\makeatother
+	
+	% Keywords command
+	\providecommand{\keywords}[1]
+	{
+		\small	
+		\textbf{Keywords:~} #1
+	}
+
+%%%%%%%%%%%%%%%%%%%%%
+% Preliminary Pages %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Set the table of contents depth (tocdepth) to the least significant section
+% type that you want to be included in the table of contents using this key:
+%   1 = section
+%   2 = subsection
+%   3 = subsubsection
+%   4 = paragraph
+\setcounter{tocdepth}{2}
+
+% The graduate school requires all caps for the title, and if
+% the title contains more than one line, the lines should be
+% of decreasing length, giving the look of an inverted pyramid.
+
+\title{MAKING VALID INFERENCE WITH DECISION TREE}
+% If the title is more than one line, separate the lines with \\[1pc]
+% as shown below:
+%\title{THIS IS THE VERY FIRST LINE\\[1pc]
+%       THIS IS THE SECOND LINE\\[1pc]
+%       THIS IS THE THIRD ONE}
+
+% The author should also be all caps
+\author{GEORGE EKOW QUAYE}
+% Uncomment to put degrees on title page
+%\AuthorDegrees{Master’s Program in Statistics}
+\date{May 2021}
+\DeptName{Master’s Program in Statistics\\\DeptName{Department of Mathematical Sciences}}
+%\DeptName{Department of Mathematical Sciences}
+
+\CommitteeChair{Xiaogang Su, Ph.D., Chair}
+\CommitteeMembers{Suneel B. Chatla, Ph.D.}
+{Wen-Yee Lee, Ph.D.}
+%Uncomment if you have a fourth member on your committee
+%\AdditionalMember{Additional Member's name}
+
+\GradSchoolDean{Stephen L. Crites,Jr., Ph.D.}
+
+%\DeptName{Department of Mathematical Sciences}
+
+%Produce the signature page
+\makesigpage
+
+
+%Uncomment if you want a copyright page
+\begin{CenteredPage}
+	\copyright Copyright\\[0.2in]
+	%by\\[0.2in]
+	George Ekow Quaye\\[0.2in]
+	2021
+\end{CenteredPage}
+
+%Delete if you don't want a dedication
+\begin{CenteredPage}
+	{\it To my\\[0.2in]
+		FATHER Carlos  Quaye, MOTIVATOR  Dr. Jacob Setorglo and my ADVISOR Dr. Xiaogang Su \\[0.2in]
+		with love}
+\end{CenteredPage}
+
+\maketitlepage
+
+\include{acknowl}       % Acknowledgements, optional
+%\include{preface}       % Preface, optional
+\include{abstract}      % Abstract, optional, but strongly recommended
+
+\tableofcontents        % Generate Table of Contents
+
+% If you a list of tables, uncomment the next line.
+% It is required if the document contains three or more tables
+\listoftables
+
+% If you use a list of figures, uncomment the next line
+% It is required if the document contains three or more figures
+\listoffigures
+
+% Here would go optional list of illustrations, maps, slides
+
+%%%%%%%%
+% Body %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%Start arabic numbering, bottom of first page and top right of subsequent pages
+\StartBody
+
+\include{chapter1}         % Introductory Chapter
+\include{chapter2}         % Chapter 2
+\include{chapter3}         % Chapter 3
+\include{chapter4}         % Chapter 4
+\include{chapter5}         % Chapter 5
+\include{chapter6}         % Chapter 6
+\include{chapter7}			% Chapter 7
+%\include{chapter7}         % Chapter 7, chap7.tex contains an
+% example of figs and tables and inclusion of pdf.
+
+%%%%%%%%%%%%%%%%%%%%
+% Concluding Pages %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Bibliography or References, REQUIRED
+
+% If using bibtex, create or modify the refs.bib file
+% and use (uncomment) the following three lines.
+%\bibliographystyle{plain}     %You may prefer \bibliographystyle{alpha}
+%\addcontentsline{toc}{chapter}{\bibname}
+%\bibliography{refs}         
+
+% If using the ``thereference'' environment instead, modify the ref.tex file
+% and use the following line
+%\include{ref}
+\StartAppendix
+\include{appendix}
+
+
+\bibliographystyle{apalike}
+
+\bibliography{myref}
+
+
+
+% If including appendices, uncomment the following lines,
+% adding more includes if needed.
+%\StartAppendix
+%\include{AppendixA}         % Example of how to include an appendix
+
+\include{vitae}         % Curriculum Vitae      REQUIRED
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}

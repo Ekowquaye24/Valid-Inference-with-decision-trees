@@ -1,0 +1,14 @@
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Decision tree presenting response to direct mailing. Sourced from \emph {Decision trees in Data mining and knowledge discovery handbook} (pages 165–192), by Rokach, L. and Maimon, O. (2005) Springer.}}{6}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Influence of tree modeling on inference: (a) node averages $\bar {y}_t$ and (b) node SD $s_t$ for $t \in \setbox \z@ \hbox {\mathsurround \z@ $\textstyle T$}\mathaccent "0365{T}$ computed with training data $\mathcal {D}$ and test data $\mathcal {D}'$. The green reference line is $y=x$. }}{11}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Coverage plot of the calibrated alpha against population alpha.}}{23}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Illustration of bias correction on SD $s_t$ through model A. The green reference line is $y=x$. }}{25}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Illustration of bias correction on SD $s_t$ through model B. The green reference line is $y=x$. }}{27}%
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Illustration of bias correction on SD $s_t$ through model C. The green reference line is $y=x$. }}{29}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Plot of the best tree via pruning and cross validation. }}{36}%
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Plot of the Confident Estimates of the Mean Salary}}{38}%
+\addvspace {10\p@ }

@@ -1,0 +1,17 @@
+% chap6.tex (Significance and Future Work)
+
+\chapter{Discussion and Conclusion}
+
+\section{Significance of the Result}
+This research aimed to identify and correct the issue when a node-level inference is naively constructed with a $(1-\alpha) \times 100\%$ confidence interval (CI) through Model (\ref{eqn-naive-ci}). An interesting observation of downward biasedness is made concerning SD from the summary of the decision tree in Figure \ref{fig-inf-influence}. Numerical and graphical results from our simulation study show that the BBC SD estimates are more reliable because they match well with the ‘gold’ SD estimates obtained from test data. Revealing that directly using SD ($s_t$) in Model (\ref{eqn-naive-ci}) leads to an over-optimism of the CI estimates. However, we have been able to use a biased correction approach via bootstrapping to make correction. On this basis, a corrected SD ($s_t^{c}$) can now be used directly as indicated in Model (\ref{eqn-naive-cis}). Hence, the bootstrap bias-corrected SD estimates become more convienent and applicable to use.
+
+
+Another interesting observation is made in Table \ref{table:coverage} which reveals that the bootstrap bias-corrected SD's confidence interval estimate provides the highest coverage probability and that using the SD corrected obtained via bootstrapping yields a good confident bounds, this is further assesed in Table \ref{table:RealD_CI} of our real data analysis.
+
+Therefore, making statistical inference on the confidence interval for the true node mean $\mu_t,$ from a decision tree model, which is the most common requests from users of decision trees, has been partly fulfilled in this research. We have focused on correction of the bias in the SD estimate. Constructing the confidence interval estimates from a tree model aids in predicting future values. However, one common issue is that constructing CI's using relation \ref{eqn-naive-cis} does not involve only the estimates from the summary of decision tree but also a constant $\alpha$ and the choice of this $\alpha$ also plays an important role.
+
+
+
+\section{Recommendation}
+
+The primary aim of this project was to obtain more reliable and valid CI estimates for a tree model. As a result bootstrap bias correction approach was employed and the coverage probabilities were obtained. These coverage probabilities were obtained with regards to the coverage of each individual terminal node of the best tree summary. In effect, coverage across all terminal nodes was ignored. Even though our proposed method works better relative to the na\"{i}ve method, the percentage coverage was not too convincing. We, therefore, recommend that, in future work, the multiplicity issues associated with the derivation of the CI estimates across all terminal nodes be addressed. Hence, we would like to explore the use of our proposed method combined with Scheffe or Tuckey's method within the one-way ANOVA setting or the bootstrap calibration (BC) method to handle the multiple comparisons across all terminal nodes in future research. Also, in future work, we recommend an extension of our approach to classification trees as well as the estimation of prediction intervals at each terminal node.

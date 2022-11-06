@@ -1,0 +1,20 @@
+% chap1.tex {Introductory Chapter}
+
+\chapter{Introduction}
+
+\section{Background}
+Decision trees are a well known statistical tool in machine learning and statistics for predictive analysis (e.g. classification and regression) \citep{lakshminarayanan2016decision}. According to \cite{lakshminarayanan2016decision} learning a decision tree from training data involves training the tree structure $\mathcal{T}$, estimating the leaf node parameters $\Omega$, and predicting a label within each leaf node. Well-known decision tree algorithms include CART \citep{breiman1984classification} and C4.5 (Quinlan, 1993). Decision trees come with several advantages in practical applications such as the ability to be well-suited for datasets with mixed attribute types (e.g. binary, categorical, real-valued attributes) and interpretability (at least on simple problems) \citep{lakshminarayanan2016decision}. Although decision trees are powerful and advantageous in some way, they are prone to over-fitting ( over-optimism) and require several studies to limit their complexity in order to minimize their generalization predictive error. Obtaining a decision tree model $\mathcal{T}$ consists of three components: a method of splitting data, a method of determining the best tree model, and a method of summarizing the terminal node. With regards to the third component, it is common that only the node size and the mean response, i.e., $\{n_t, \bar{y}_t\}$, are included as node summary at each terminal node $t \in \widetilde{\mathcal{T}}$, where $\widetilde{\mathcal{T}}$ denotes the set of all the terminal nodes of $\mathcal{T}.$ Note that $\bar{y}_t$ amounts to the proportion of 1's in the case of classification trees, on which basis the majority rule can be used to produce the 0/1 summary. One difficulty with this summarizing method is that it does not allow for statistical inference such as a confidence interval for the true node mean $\mu_t,$. Though inference stands as one of the most common requests from the users of decision trees, this issue  has rarely been fulfilled in practice. 
+
+
+\section{Problem Statement}
+ A na\"{i}ve way of making node-level inference is to construct a $(1-\alpha) \times 100\%$ confidence interval (CI)
+
+\begin{equation}
+\label{eqn-naive-ci}
+\bar{y}_t \, \pm  \, z_{1-\alpha/2} \, \frac{s_t}{\sqrt{n_t}}
+\end{equation} 
+for each terminal node $t \in \widetilde{\mathcal{T}},$ where $z_{1-\alpha/2}$ is $(1-\alpha/2)$-th percentile of the standard normal $\mathcal{N}(0, 1)$ distribution and $s_t$ denotes the standard deviation (SD) of responses in node $t$ and $n_t$ for the node size. Nevertheless, these sets of intervals are over-optimistic owing to the very adaptive nature of tree modeling, in other words, they are too narrow to have the desired coverage .
+
+
+\section{Overview of Thesis}
+Chapter 1 talks briefly about the decision trees, their derivation process, and the over-optimism problem when used for prediction purposes, which has been a long-standing issue for scientists. Chapter 2 further elaborates on decision trees including their history, types, extensions, and recent developments such as interaction trees and oblique decision trees and their problem with statistical inference or prediction. In subsequent chapters, we describe in detail the source of the prediction problem and available methods in treating that. Specifically, chapter 3 discusses source of overoptimism, available approaches in treating this issue and our proposed method or algorithm which seeks to outperform the existing method. A simulation study on decision tree modeling is carried out in chapter 4, where we further elaborate the optimism problem given the three models, investigate the performance of our proposed method and compare it with competitive approaches. In chapter 5 we perform an illustrative example using real data on the obtained accurate proposed method to illustrate the use of our method in a practical setting. Chapter 6 which is the final chapter summarizes the thesis and discusses possible future research directions. 

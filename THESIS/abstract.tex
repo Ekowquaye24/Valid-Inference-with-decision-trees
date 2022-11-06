@@ -1,0 +1,12 @@
+% abstract.tex (Abstract)
+
+\addcontentsline{toc}{chapter}{Abstract}
+
+\chapter*{Abstract}
+
+Hypothesis testing and Confidence Interval (CI) estimates are key statistics in predicting future values in data analysis. Most often, CI estimates are directly obtained from the summary statistics of a particular statistical methodology output. However, when it comes to the summary of decision tree outputs, these CI estimates are not directly obtained. So a na\"{i}ve way of making node-level inference is to construct a $(1-\alpha) \times 100\%$ confidence interval for a node mean $\bar{y}_t$ using the relation: $\bar{y}_t \, \pm  \, z_{1-\alpha/2} \, \frac{s_t}{\sqrt{n_t}}$, where $\bar{y}_t$ is the node mean and $s_t$ is the standard deviation estimates from the decision tree summary. Nevertheless, these sets of intervals tend to be over-optimistic owing to the very adaptive nature of tree modeling, in other words, they are too narrow to have the desired coverage. This challenge with CI in tree summary stands as one of the most common requests from the users of decision trees that are however rarely fulfilled in practice. In this research, we make a strong effort to nail out the source of over-optimistic and correct it accordingly. We began by treating this issue with an existing method known as the Bootstrap Calibration (BC) on the $\alpha$. Statistically, this BC method is also plagued with overfitted estimates. We then resorted to our approach (Bootstrap Bias Correction), an approach that seeks to correct a downwards biasedness in the $s_t$ estimates to obtained bias-corrected SD estimates ($s_t^{''}$). Now ,the node mean $\bar{y}_t$, the node sample size $n_t$,  a fixed $\alpha$ value together with the BBC estimate $s_t^{''}$ was then used to obtain a more accurate CI intervals for $\bar{y}_t$ through the relation: $\bar{y}_t \pm z_{1-\alpha/2} s^{('')}_t /\sqrt{n_t}$. The CI estimates from the proposed method (BBC) were empirically assessed and illustrated through simulation studies and validated via real data exploration.
+
+
+
+
+
